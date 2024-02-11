@@ -3,7 +3,7 @@
     /// <summary>
     /// Tenant information
     /// </summary>
-    public interface ITenant
+    public interface ITenantOptions
     {
         /// <summary>
         /// The tenant Id
