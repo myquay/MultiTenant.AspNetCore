@@ -1,21 +1,24 @@
-﻿using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Strategies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
+namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 {
     /// <summary>
     /// Tenant builder
     /// </summary>
     /// <param name="services"></param>
-    public class TenantBuilder(IServiceCollection services)
+    public class TenantBuilder(WebApplicationBuilder builder)
     {
         /// <summary>
         /// Register the tenant resolver implementation
@@ -25,8 +28,8 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
         /// <returns></returns>
         public TenantBuilder WithResolutionStrategy<V>() where V : class, ITenantResolutionStrategy
         {
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped(typeof(ITenantResolutionStrategy), typeof(V));
+            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped(typeof(ITenantResolutionStrategy), typeof(V));
             return this;
         }
 
@@ -47,7 +50,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
         /// <returns></returns>
         public TenantBuilder TenantMappingProvider<V>() where V : class, ITenantLookupService
         {
-            services.AddScoped(typeof(ITenantLookupService), typeof(V));
+            builder.Services.AddScoped(typeof(ITenantLookupService), typeof(V));
             return this;
         }
 
@@ -56,9 +59,19 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
         /// </summary>
         /// <param name="tenants"></param>
         /// <returns></returns>
-        public TenantBuilder WithInMemoryTenantMapping((String Id, String Identifier)[] tenants)
+        public TenantBuilder WithInMemoryTenantMapping((string Id, string Identifier)[] tenants)
         {
-            services.AddSingleton<ITenantLookupService>(new InMemoryLookupService(tenants));
+            builder.Services.AddSingleton<ITenantLookupService>(new InMemoryLookupService(tenants));
+            return this;
+        }
+
+        public TenantBuilder WithTenantedServices(Action<string, IServiceCollection> configuration)
+        {
+
+            builder.Services.RemoveAll<IServiceProvider>();
+            builder.Services.AddSingleton<IMultiTenantServiceProvider>(new MultiTenantServiceProvider(builder.Services, configuration));
+            builder.Host.UseServiceProviderFactory(context => new MultiTenantServiceProviderFactory(configuration));
+
             return this;
         }
 
