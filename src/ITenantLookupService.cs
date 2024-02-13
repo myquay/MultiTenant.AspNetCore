@@ -9,12 +9,13 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant
     /// <summary>
     /// Returns the tenant id for a specific identifier
     /// </summary>
-    public interface ITenantLookupService
+    public interface ITenantLookupService<T> where T : ITenantInfo
     {
         /// <summary>
         /// Given an identifier, it returns the durable tenant id
         /// </summary>
         /// <returns></returns>
-        Task<string> GetTenantIdAsync(string identifier);
+        Task<T> GetTenantAsync(string identifier);
+
     }
 }

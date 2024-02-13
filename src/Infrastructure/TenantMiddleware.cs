@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 {
-    internal class TenantMiddleware
+    internal class TenantMiddleware<T> where T : ITenantInfo
     {
         private readonly RequestDelegate next;
 
@@ -21,12 +21,14 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 
         public async Task Invoke(HttpContext context)
         {
-            var accessor = context.RequestServices.GetRequiredService<IMultiTenantContextAccessor>();
+            var accessor = context.RequestServices.GetRequiredService<IMultiTenantContextAccessor<T>>();
 
-            if (accessor.TenantId == null)
+            if (accessor.TenantInfo == null)
             {
-                var resolver = context.RequestServices.GetRequiredService<ITenantContextService>();
-                accessor.TenantId = await resolver.GetTenantIdAsync();
+                var resolver = context.RequestServices.GetRequiredService<ITenantLookupService<T>>();
+                var tenantIdentifierResolver = context.RequestServices.GetRequiredService<ITenantResolutionStrategy>();
+
+                accessor.TenantInfo = await resolver.GetTenantAsync(await tenantIdentifierResolver.GetTenantIdentifierAsync());
             }
 
             var provider = context.RequestServices.GetRequiredService<IMultiTenantServiceProvider>();

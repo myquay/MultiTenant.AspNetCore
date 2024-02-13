@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 {
-    public class MultiTenantServiceProvider(IServiceCollection containerBuilder, Action<string, IServiceCollection> tenantServiceConfiguration) : IMultiTenantServiceProvider, ISupportRequiredService
+    internal class MultiTenantServiceProvider<T>(IServiceCollection containerBuilder, Action<T, IServiceCollection> tenantServiceConfiguration) : IMultiTenantServiceProvider, ISupportRequiredService where T : ITenantInfo
     {
         private readonly IServiceProvider DefaultProvider = containerBuilder.BuildServiceProvider();
 
@@ -19,12 +19,12 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 
         public object? GetService(Type serviceType)
         {
-            var tenantContext = DefaultProvider.GetRequiredService<IMultiTenantContextAccessor>();
+            var tenantContext = DefaultProvider.GetRequiredService<IMultiTenantContextAccessor<T>>();
 
-            if (tenantContext.TenantId == null)
+            if (tenantContext.TenantInfo == null)
                 return DefaultProvider.GetService(serviceType);
 
-            if (!CompiledProviders.ContainsKey(tenantContext.TenantId))
+            if (!CompiledProviders.ContainsKey(tenantContext.TenantInfo.Id))
             {
                 //Add all default services
                 var container = new ServiceCollection();
@@ -32,13 +32,13 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
                     container.Add(service);
 
                 //Add tenant specific services
-                tenantServiceConfiguration(tenantContext.TenantId, container);
+                tenantServiceConfiguration(tenantContext.TenantInfo, container);
 
                 //Add tenant specific services
-                CompiledProviders.Add(tenantContext.TenantId, container.BuildServiceProvider());
+                CompiledProviders.Add(tenantContext.TenantInfo.Id, container.BuildServiceProvider());
             }
 
-            return CompiledProviders[tenantContext.TenantId].GetService(serviceType);
+            return CompiledProviders[tenantContext.TenantInfo.Id].GetService(serviceType);
         }
 
         public object GetRequiredService(Type serviceType)
@@ -48,11 +48,11 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 
     }
 
-    public class MultiTenantServiceProviderFactory(Action<string, IServiceCollection> tenantServices) : IServiceProviderFactory<IServiceCollection>
+    internal class MultiTenantServiceProviderFactory<T>(Action<T, IServiceCollection> tenantServices) : IServiceProviderFactory<IServiceCollection> where T : ITenantInfo
     {
         public IServiceCollection CreateBuilder(IServiceCollection services) => services;
 
         public IServiceProvider CreateServiceProvider(IServiceCollection containerBuilder) =>
-            new MultiTenantServiceProvider(containerBuilder, tenantServices);
+            new MultiTenantServiceProvider<T>(containerBuilder, tenantServices);
     }
 }

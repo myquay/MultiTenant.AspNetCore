@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Contrib.MultiTenant.Services
 {
-    internal class AsyncLocalMultiTenantContextAccessor : IMultiTenantContextAccessor
+    internal class AsyncLocalMultiTenantContextAccessor<W> : IMultiTenantContextAccessor<W> where W : ITenantInfo
     {
-        private static readonly AsyncLocal<string?> AsyncLocalContext = new();
+        private static readonly AsyncLocal<W?> AsyncLocalContext = new();
 
-        public string? TenantId { get => AsyncLocalContext.Value; set => AsyncLocalContext.Value = value; }
+        public W? TenantInfo { get => AsyncLocalContext.Value; set => AsyncLocalContext.Value = value; }
     }
 }

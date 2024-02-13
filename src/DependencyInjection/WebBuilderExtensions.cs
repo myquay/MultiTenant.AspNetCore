@@ -16,12 +16,11 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static TenantBuilder AddMultiTenancy(this WebApplicationBuilder builder)
+        public static TenantBuilder<T> AddMultiTenancy<T>(this WebApplicationBuilder builder) where T : ITenantInfo
         {
-            builder.Services.AddScoped<ITenantContextService, TenantContextService>();
-            builder.Services.AddScoped<IMultiTenantContextAccessor, AsyncLocalMultiTenantContextAccessor>();
+            builder.Services.AddScoped<IMultiTenantContextAccessor<T>, AsyncLocalMultiTenantContextAccessor<T>>();
 
-            return new TenantBuilder(builder);
+            return new TenantBuilder<T>(builder);
         }
     }
 }

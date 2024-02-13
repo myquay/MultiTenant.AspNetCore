@@ -9,11 +9,11 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant
     /// <summary>
     /// Provides access to the current tenant context
     /// </summary>
-    public interface IMultiTenantContextAccessor
+    public interface IMultiTenantContextAccessor<T> where T : ITenantInfo
     {
         /// <summary>
-        /// Current tenant Id
+        /// Current tenant
         /// </summary>
-        string? TenantId { get; set;  }
+        T? TenantInfo { get; set; }
     }
 }

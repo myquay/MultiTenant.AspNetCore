@@ -18,8 +18,8 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
         /// <typeparam name="T"></typeparam>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseMultiTenancy(this IApplicationBuilder builder)
-            => builder.UseMiddleware<TenantMiddleware>();
+        public static IApplicationBuilder UseMultiTenancy<T>(this IApplicationBuilder builder) where T : ITenantInfo
+            => builder.UseMiddleware<TenantMiddleware<T>>();
 
     }
 }

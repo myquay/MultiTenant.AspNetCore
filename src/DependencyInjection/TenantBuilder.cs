@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
     /// Tenant builder
     /// </summary>
     /// <param name="services"></param>
-    public class TenantBuilder(WebApplicationBuilder builder)
+    public class TenantBuilder<T>(WebApplicationBuilder builder) where T : ITenantInfo
     {
         /// <summary>
         /// Register the tenant resolver implementation
@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// <typeparam name="V"></typeparam>
         /// <param name="lifetime"></param>
         /// <returns></returns>
-        public TenantBuilder WithResolutionStrategy<V>() where V : class, ITenantResolutionStrategy
+        public TenantBuilder<T> WithResolutionStrategy<V>() where V : class, ITenantResolutionStrategy
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped(typeof(ITenantResolutionStrategy), typeof(V));
@@ -37,7 +37,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// Helper for host resolution strategy
         /// </summary>
         /// <returns></returns>
-        public TenantBuilder WithHostResolutionStrategy()
+        public TenantBuilder<T> WithHostResolutionStrategy()
         {
             return WithResolutionStrategy<HostResolutionStrategy>();
         }
@@ -48,29 +48,18 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// <typeparam name="V"></typeparam>
         /// <param name="lifetime"></param>
         /// <returns></returns>
-        public TenantBuilder TenantMappingProvider<V>() where V : class, ITenantLookupService
+        public TenantBuilder<T> WithTenantLookupService<V>() where V : class, ITenantLookupService<T>
         {
-            builder.Services.AddScoped(typeof(ITenantLookupService), typeof(V));
+            builder.Services.AddScoped<ITenantLookupService<T>, V>();
             return this;
         }
 
-        /// <summary>
-        /// Register the tenant in memory lookup service implementation
-        /// </summary>
-        /// <param name="tenants"></param>
-        /// <returns></returns>
-        public TenantBuilder WithInMemoryTenantMapping((string Id, string Identifier)[] tenants)
-        {
-            builder.Services.AddSingleton<ITenantLookupService>(new InMemoryLookupService(tenants));
-            return this;
-        }
-
-        public TenantBuilder WithTenantedServices(Action<string, IServiceCollection> configuration)
+        public TenantBuilder<T> WithTenantedServices(Action<T, IServiceCollection> configuration)
         {
 
             builder.Services.RemoveAll<IServiceProvider>();
-            builder.Services.AddSingleton<IMultiTenantServiceProvider>(new MultiTenantServiceProvider(builder.Services, configuration));
-            builder.Host.UseServiceProviderFactory(context => new MultiTenantServiceProviderFactory(configuration));
+            builder.Services.AddSingleton<IMultiTenantServiceProvider>(new MultiTenantServiceProvider<T>(builder.Services, configuration));
+            builder.Host.UseServiceProviderFactory(context => new MultiTenantServiceProviderFactory<T>(configuration));
 
             return this;
         }

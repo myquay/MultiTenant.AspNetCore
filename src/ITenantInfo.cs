@@ -7,14 +7,18 @@ using System.Threading.Tasks;
 namespace Microsoft.AspNetCore.Contrib.MultiTenant
 {
     /// <summary>
-    /// Resolves the current tenant Id
+    /// Basic tenant info
     /// </summary>
-    internal interface ITenantContextService
+    public interface ITenantInfo
     {
         /// <summary>
-        /// Get the current tenant id
+        /// Tenant id
+        //// </summary>
+        string Id { get; set; }
+                        
+        /// <summary>
+        /// Tenant name
         /// </summary>
-        /// <returns></returns>
-        public Task<string> GetTenantIdAsync();
+        string Identifier { get; set; }
     }
 }
