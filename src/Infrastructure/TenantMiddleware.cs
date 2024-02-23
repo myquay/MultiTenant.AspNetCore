@@ -10,27 +10,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 {
-    internal class TenantMiddleware<T> where T : ITenantInfo
+    /// <summary>
+    /// Multi-tenant middleware
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="TenantAccessor"></param>
+    /// <param name="TenantResolver"></param>
+    /// <param name="TenantResolutionStrategy"></param>
+    public class TenantMiddleware<T>(IMultiTenantContextAccessor<T> TenantAccessor, ITenantLookupService<T> TenantResolver, ITenantResolutionStrategy TenantResolutionStrategy) : IMiddleware where T : ITenantInfo
     {
-        private readonly RequestDelegate next;
-
-        public TenantMiddleware(RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            this.next = next;
-        }
+            //Set the tenant context
+            TenantAccessor.TenantInfo ??= await TenantResolver.GetTenantAsync(await TenantResolutionStrategy.GetTenantIdentifierAsync());
 
-        public async Task Invoke(HttpContext context)
-        {
-            var accessor = context.RequestServices.GetRequiredService<IMultiTenantContextAccessor<T>>();
-
-            if (accessor.TenantInfo == null)
-            {
-                var resolver = context.RequestServices.GetRequiredService<ITenantLookupService<T>>();
-                var tenantIdentifierResolver = context.RequestServices.GetRequiredService<ITenantResolutionStrategy>();
-
-                accessor.TenantInfo = await resolver.GetTenantAsync(await tenantIdentifierResolver.GetTenantIdentifierAsync());
-            }
-
+            //Configure the service provider
             var provider = context.RequestServices.GetRequiredService<IMultiTenantServiceProvider>();
             context.RequestServices = provider;
 
