@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Strategies;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -56,10 +58,16 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 
         public TenantBuilder<T> WithTenantedServices(Action<T, IServiceCollection> configuration)
         {
+            //Replace the default service provider with a multitenant service provider
+            builder.Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            builder.Services.RemoveAll<IServiceProvider>();
-            builder.Services.AddSingleton<IMultiTenantServiceProvider>(new MultiTenantServiceProvider<T>(builder.Services, configuration));
-            builder.Host.UseServiceProviderFactory(context => new MultiTenantServiceProviderFactory<T>(configuration));
+            //Register the multi-tenant service provider
+            builder.Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(builder.Services, configuration));
+            builder.Services.AddSingleton<IMultiTenantServiceScopeFactory, MultiTenantServiceScopeFactory<T>>();
+
+            //Some services might be registered before the tenant middleware, so not available during the application startup
+            builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
 
             return this;
         }

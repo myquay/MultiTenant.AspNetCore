@@ -12,14 +12,14 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
     /// </summary>
     public static class IApplicationBuilderExtensions
     {
-        /// <summary>
-        /// Use the Tenant Middleware to process the request
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseMultiTenancy<T>(this IApplicationBuilder builder) where T : ITenantInfo
-            => builder.UseMiddleware<TenantMiddleware<T>>();
+        ///// <summary>
+        ///// Use the Tenant Middleware to process the request
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="builder"></param>
+        ///// <returns></returns>
+        //public static IApplicationBuilder UseMultiTenancy<T>(this IApplicationBuilder builder) where T : ITenantInfo
+        //    => builder.UseMiddleware<TenantMiddleware<T>>();
 
     }
 }
