@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure;
+using Microsoft.AspNetCore.Contrib.MultiTenant.Middleware;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
 using Microsoft.AspNetCore.Contrib.MultiTenant.Strategies;
 using Microsoft.AspNetCore.Hosting;
@@ -56,11 +57,15 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
             return this;
         }
 
+        /// <summary>
+        /// Register tenant specific services
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public TenantBuilder<T> WithTenantedServices(Action<T, IServiceCollection> configuration)
         {
             //Replace the default service provider with a multitenant service provider
             builder.Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //Register the multi-tenant service provider
             builder.Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(builder.Services, configuration));

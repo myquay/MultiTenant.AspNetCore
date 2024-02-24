@@ -8,14 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
+namespace Microsoft.AspNetCore.Contrib.MultiTenant.Middleware
 {
     /// <summary>
     /// This middleware is responsible for setting up the scope for the tenant specific request services
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="tenantServicesConfiguration"></param>
-    internal class MultitenantRequestServicesMiddleware<T>(RequestDelegate next, IMultiTenantServiceScopeFactory multiTenantServiceProviderScopeFactory, IHttpContextAccessor httpContextAccessor, IMultiTenantContextAccessor<T> TenantAccessor, ITenantLookupService<T> TenantResolver, ITenantResolutionStrategy TenantResolutionStrategy) where T : ITenantInfo
+    internal class MultiTenantRequestServicesMiddleware<T>(RequestDelegate next, IMultiTenantServiceScopeFactory multiTenantServiceProviderScopeFactory, IHttpContextAccessor httpContextAccessor, IMultiTenantContextAccessor<T> TenantAccessor, ITenantLookupService<T> TenantResolver, ITenantResolutionStrategy TenantResolutionStrategy) where T : ITenantInfo
     {
 
         /// <summary>
@@ -29,6 +29,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
             httpContextAccessor.HttpContext ??= context;
             TenantAccessor.TenantInfo ??= await TenantResolver.GetTenantAsync(await TenantResolutionStrategy.GetTenantIdentifierAsync());
 
+            //Replace the service providers feature with our tenant specific one
             IServiceProvidersFeature existingFeature = null!;
             try
             {

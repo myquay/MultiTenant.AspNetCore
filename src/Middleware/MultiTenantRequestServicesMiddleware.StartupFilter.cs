@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
+namespace Microsoft.AspNetCore.Contrib.MultiTenant.Middleware
 {
     /// <summary>
     /// Register the multitenant request services middleware with the app pipeline.
@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
         {
             return builder =>
             {
-                builder.UseMiddleware<MultitenantRequestServicesMiddleware<T>>();
+                builder.UseMiddleware<MultiTenantRequestServicesMiddleware<T>>();
                 next(builder);
             };
         }
