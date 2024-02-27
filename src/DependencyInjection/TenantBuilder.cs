@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
     /// Tenant builder
     /// </summary>
     /// <param name="services"></param>
-    public class TenantBuilder<T>(WebApplicationBuilder builder) where T : ITenantInfo
+    public class TenantBuilder<T>(IServiceCollection Services) where T : ITenantInfo
     {
         /// <summary>
         /// Register the tenant resolver implementation
@@ -31,8 +31,8 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// <returns></returns>
         public TenantBuilder<T> WithResolutionStrategy<V>() where V : class, ITenantResolutionStrategy
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.AddScoped(typeof(ITenantResolutionStrategy), typeof(V));
+            Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            Services.TryAddSingleton(typeof(ITenantResolutionStrategy), typeof(V));
             return this;
         }
 
@@ -53,9 +53,23 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// <returns></returns>
         public TenantBuilder<T> WithTenantLookupService<V>() where V : class, ITenantLookupService<T>
         {
-            builder.Services.AddScoped<ITenantLookupService<T>, V>();
+            Services.TryAddSingleton<ITenantLookupService<T>, V>();
             return this;
         }
+
+        /// <summary>
+        /// Register the tenant lookup service implementation
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="lifetime"></param>
+        /// <returns></returns>
+        public TenantBuilder<T> WithInMemoryTenantLookupService(IEnumerable<T> tenants)
+        {
+            var service = new InMemoryLookupService<T>(tenants);
+            Services.TryAddSingleton<ITenantLookupService<T>>(service);
+            return this;
+        }
+
 
         /// <summary>
         /// Register tenant specific services
@@ -65,14 +79,11 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         public TenantBuilder<T> WithTenantedServices(Action<T, IServiceCollection> configuration)
         {
             //Replace the default service provider with a multitenant service provider
-            builder.Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
+            Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
 
             //Register the multi-tenant service provider
-            builder.Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(builder.Services, configuration));
-            builder.Services.AddSingleton<IMultiTenantServiceScopeFactory, MultiTenantServiceScopeFactory<T>>();
-
-            //Some services might be registered before the tenant middleware, so not available during the application startup
-            builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = false);
+            Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(Services, configuration));
+            Services.AddSingleton<IMultiTenantServiceScopeFactory, MultiTenantServiceScopeFactory<T>>();
 
             return this;
         }
