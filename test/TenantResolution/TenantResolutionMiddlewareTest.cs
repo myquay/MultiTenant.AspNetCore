@@ -37,6 +37,23 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Tests.TenantResolution
         }
 
         [Theory]
+        [InlineData("tenant1.local")]
+        [InlineData("tenant2.local")]
+        public async Task TenantAccessorValidTenant(string url)
+        {
+
+            var context = await _testMultiTenancyServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString(url);
+                c.Request.Path = "/current/tenant-accessor";
+            });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Equal(url, await new StreamReader(context.Response.Body).ReadToEndAsync());
+        }
+
+        [Theory]
         [InlineData("invalid-tenant.local")]
         public async Task TenantResolutionServiceInvalidTenant(string url)
         {
@@ -82,6 +99,12 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Tests.TenantResolution
                 {
                     var tenantLookUpService = context.RequestServices.GetRequiredService<ITenantResolutionStrategy>();
                     await context.Response.WriteAsync(await tenantLookUpService.GetTenantIdentifierAsync());
+                });
+
+                endpoints.MapGet("/current/tenant-accessor", async context =>
+                {
+                    var tenantAccessor = context.RequestServices.GetRequiredService<IMultiTenantContextAccessor<TestTenant>>();
+                    await context.Response.WriteAsync(tenantAccessor.TenantInfo!.Identifier);
                 });
             });
         }
