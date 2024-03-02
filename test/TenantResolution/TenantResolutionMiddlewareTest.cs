@@ -85,9 +85,6 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Tests.TenantResolution
                     new() { Id = "1", Identifier = "tenant1.local" },
                     new() { Id = "2", Identifier = "tenant2.local" }
                 });
-
-            //Singleton test service
-            services.AddSingleton<ITestService, TestService>();
         }
 
         public void Configure(IApplicationBuilder app)

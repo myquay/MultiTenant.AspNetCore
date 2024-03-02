@@ -18,12 +18,20 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 
         //This dictionary keeps track of all of the tenant specific service providers
         private readonly Dictionary<string, IServiceProvider> CompiledProviders = [];
+        private readonly object _lock = new();
 
         public IServiceProvider GetServiceProviderForTenant(T tenant)
         {
             //Only create a new container if needed for performance
-            if (!CompiledProviders.TryGetValue(tenant.Id, out IServiceProvider? value))
+            if(CompiledProviders.TryGetValue(tenant.Id, out IServiceProvider? v))
+                return v;
+
+            //Add container for tenant
+            lock (_lock)
             {
+                if (CompiledProviders.TryGetValue(tenant.Id, out IServiceProvider? s))
+                    return s;
+
                 //Add all default services
                 var container = new ServiceCollection();
                 foreach (var service in containerBuilder)
@@ -31,13 +39,13 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 
                 //Add tenant specific services
                 tenantServiceConfiguration(tenant, container);
-                value = container.BuildServiceProvider();
+                s = container.BuildServiceProvider();
 
                 //Add tenant specific services
-                CompiledProviders.Add(tenant.Id, value);
-            }
+                CompiledProviders.Add(tenant.Id, s);
 
-            return value;
+                return s;
+            }
         }
     }
 
