@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
 {
@@ -76,7 +78,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public TenantBuilder<T> WithTenantedServices(Action<T, IServiceCollection> configuration)
+        public TenantBuilder<T> WithTenantedServices(Action<IServiceCollection, T?> configuration)
         {
             //Replace the default service provider with a multitenant service provider
             Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
@@ -84,6 +86,36 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
             //Register the multi-tenant service provider
             Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(Services, configuration));
             Services.AddSingleton<IMultiTenantServiceScopeFactory, MultiTenantServiceScopeFactory<T>>();
+
+            return this;
+        }
+
+        /// <summary>
+        /// Configure tenant specific options
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="tenantOptionsConfiguration"></param>
+        /// <returns></returns>
+        public TenantBuilder<T> WithTenantedConfigure<TOptions>(Action<TOptions, T?> tenantOptionsConfiguration) where TOptions : class
+        {
+            Services.AddOptions();
+
+            Services.TryAddSingleton<IOptionsMonitorCache<TOptions>, MultiTenantOptionsCache<TOptions, T>>();
+            Services.TryAddScoped<IOptionsSnapshot<TOptions>>((sp) =>
+            {
+                return new MultiTenantOptionsManager<TOptions>(sp.GetRequiredService<IOptionsFactory<TOptions>>(), sp.GetRequiredService<IOptionsMonitorCache<TOptions>>());
+            });
+            Services.TryAddSingleton<IOptions<TOptions>>((sp) =>
+            {
+                return new MultiTenantOptionsManager<TOptions>(sp.GetRequiredService<IOptionsFactory<TOptions>>(), sp.GetRequiredService<IOptionsMonitorCache<TOptions>>());
+            });
+
+            Services.AddSingleton<IConfigureOptions<TOptions>, ConfigureOptions<TOptions>>((IServiceProvider sp) =>
+            {
+                var tenantAccessor = sp.GetRequiredService<IMultiTenantContextAccessor<T>>();
+                return new ConfigureOptions<TOptions>((options) => tenantOptionsConfiguration(options, tenantAccessor.TenantInfo));
+
+            });
 
             return this;
         }

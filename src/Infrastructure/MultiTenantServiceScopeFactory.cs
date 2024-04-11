@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
     /// Factory for creating tenant specific service providers
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class MultiTenantServiceProviderFactory<T>(IServiceCollection containerBuilder, Action<T, IServiceCollection> tenantServiceConfiguration) where T : ITenantInfo
+    internal class MultiTenantServiceProviderFactory<T>(IServiceCollection containerBuilder, Action<IServiceCollection, T?> tenantServiceConfiguration) where T : ITenantInfo
     {
 
         //This dictionary keeps track of all of the tenant specific service providers
@@ -38,7 +38,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
                     container.Add(service);
 
                 //Add tenant specific services
-                tenantServiceConfiguration(tenant, container);
+                tenantServiceConfiguration(container, tenant);
                 s = container.BuildServiceProvider();
 
                 //Add tenant specific services

@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
         public static TenantBuilder<T> AddMultiTenancy<T>(this IServiceCollection Services) where T : ITenantInfo
         {
             //Provide ambient tenant context
-            Services.AddScoped<IMultiTenantContextAccessor<T>, AsyncLocalMultiTenantContextAccessor<T>>();
+            Services.TryAddSingleton<IMultiTenantContextAccessor<T>, AsyncLocalMultiTenantContextAccessor<T>>();
 
             //Register middleware to populate the ambient tenant context early in the pipeline
             Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultiTenantContextAccessorStartupFilter<T>()));
