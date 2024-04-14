@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,22 +18,13 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
     internal class MultiTenantServiceProviderFactory<T>(IServiceCollection containerBuilder, Action<IServiceCollection, T?> tenantServiceConfiguration) where T : ITenantInfo
     {
 
-        //This dictionary keeps track of all of the tenant specific service providers
-        private readonly Dictionary<string, IServiceProvider> CompiledProviders = [];
-        private readonly object _lock = new();
+        //Cache compiled providers
+        private readonly ConcurrentDictionary<string, Lazy<IServiceProvider>> CompiledProviders = new();
 
         public IServiceProvider GetServiceProviderForTenant(T tenant)
         {
-            //Only create a new container if needed for performance
-            if(CompiledProviders.TryGetValue(tenant.Id, out IServiceProvider? v))
-                return v;
-
-            //Add container for tenant
-            lock (_lock)
+            return CompiledProviders.GetOrAdd(tenant.Id, (key) => new Lazy<IServiceProvider>(() =>
             {
-                if (CompiledProviders.TryGetValue(tenant.Id, out IServiceProvider? s))
-                    return s;
-
                 //Add all default services
                 var container = new ServiceCollection();
                 foreach (var service in containerBuilder)
@@ -39,13 +32,9 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
 
                 //Add tenant specific services
                 tenantServiceConfiguration(container, tenant);
-                s = container.BuildServiceProvider();
+                return container.BuildServiceProvider();
 
-                //Add tenant specific services
-                CompiledProviders.Add(tenant.Id, s);
-
-                return s;
-            }
+            })).Value;
         }
     }
 

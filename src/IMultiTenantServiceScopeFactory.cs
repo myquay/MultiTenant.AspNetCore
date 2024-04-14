@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Microsoft.AspNetCore.Contrib.MultiTenant
 {
     /// <summary>
-    /// Provides access to the current tenant context
+    /// Custom interface to allow registraion of a scoped service that can be resolved within a tenant scope
     /// </summary>
     public interface IMultiTenantServiceScopeFactory : IServiceScopeFactory
     { }
