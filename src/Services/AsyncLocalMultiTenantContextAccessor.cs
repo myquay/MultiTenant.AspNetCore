@@ -1,13 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Services
+﻿namespace MultiTenant.AspNetCore
 {
     /// <summary>
     /// Async-local based implementation of <see cref="IMultiTenantContextAccessor{T}"/>

@@ -1,23 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Middleware;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Strategies;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using MultiTenant.AspNetCore.Infrastructure.DependencyInjection;
+using MultiTenant.AspNetCore.Infrastructure.Middleware;
+using MultiTenant.AspNetCore.Infrastructure.Options;
+using MultiTenant.AspNetCore.Infrastructure.Strategies;
+using MultiTenant.AspNetCore.Services;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
+namespace MultiTenant.AspNetCore.Builder
 {
     /// <summary>
     /// Tenant builder

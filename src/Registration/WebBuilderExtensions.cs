@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Middleware;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Services;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MultiTenant.AspNetCore.Builder;
+using MultiTenant.AspNetCore.Infrastructure.Middleware;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection
+namespace MultiTenant.AspNetCore
 {
     /// <summary>
     /// Nice method to create the tenant builder

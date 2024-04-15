@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MultiTenant.AspNetCore.Infrastructure.Middleware;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Middleware
+namespace MultiTenant.AspNetCore.Infrastructure.Middleware
 {
     /// <summary>
     /// Register the multitenant context accessor middleware with the app pipeline.

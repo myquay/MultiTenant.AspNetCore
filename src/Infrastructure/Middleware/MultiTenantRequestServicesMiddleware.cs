@@ -1,14 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using MultiTenant.AspNetCore.Infrastructure.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Middleware
+namespace MultiTenant.AspNetCore.Infrastructure.Middleware
 {
     /// <summary>
     /// This middleware is responsible for setting up the scope for the tenant specific request services

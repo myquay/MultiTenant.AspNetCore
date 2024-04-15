@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Middleware
+namespace MultiTenant.AspNetCore.Infrastructure.Middleware
 {
     /// <summary>
     /// Register the multitenant request services middleware with the app pipeline.

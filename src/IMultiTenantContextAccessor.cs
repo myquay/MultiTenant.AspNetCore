@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant
+namespace MultiTenant.AspNetCore
 {
     /// <summary>
     /// Provides access to the current tenant context

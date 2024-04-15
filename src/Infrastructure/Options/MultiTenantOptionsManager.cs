@@ -1,15 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
+namespace MultiTenant.AspNetCore.Infrastructure.Options
 {
     internal class MultiTenantOptionsManager<TOptions>(IOptionsFactory<TOptions> factory, IOptionsMonitorCache<TOptions> cache) : IOptionsSnapshot<TOptions> where TOptions : class
     {
-        public TOptions Value => Get(Options.DefaultName);
+        public TOptions Value => Get(Microsoft.Extensions.Options.Options.DefaultName);
 
         public TOptions Get(string? name)
         {

@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Strategies
+namespace MultiTenant.AspNetCore.Infrastructure.Strategies
 {
     /// <summary>
     /// Resolve the host to a tenant identifier

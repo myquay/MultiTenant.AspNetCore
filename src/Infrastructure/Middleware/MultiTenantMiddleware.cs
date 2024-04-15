@@ -1,17 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure;
-using Microsoft.AspNetCore.Contrib.MultiTenant;
 using System.Collections.Concurrent;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.MultiTenantPipeline
+namespace MultiTenant.AspNetCore.Infrastructure.Middleware
 {
 
 
@@ -22,7 +14,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.MultiTenantPipeline
     /// <param name="next"></param>
     /// <param name="configurePipeline"></param>
     internal class MultiTenantMiddleware<T>(RequestDelegate next, IApplicationBuilder builder, Action<T, IApplicationBuilder> configurePipeline)
-        where T : class, ITenantInfo
+        where T : ITenantInfo
     {
         //Cache compiled pipelines
         private readonly ConcurrentDictionary<string, Lazy<RequestDelegate>> _pipelinesCache = new();

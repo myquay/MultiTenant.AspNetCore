@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Infrastructure
+namespace MultiTenant.AspNetCore.Infrastructure.Options
 {
     /// <summary>
     /// Constructs a new instance of MultiTenantOptionsCache.
