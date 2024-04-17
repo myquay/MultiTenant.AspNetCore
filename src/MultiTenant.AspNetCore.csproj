@@ -5,6 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>MultiTenant.AspNetCore</Title>
+    <Authors>Michael McKenna</Authors>
+    <Description>Multi-tenancy support for ASP.NET Core 8</Description>
+    <Copyright>Copyright 2012-2024  Michael McKenna</Copyright>
+    <PackageProjectUrl>https://github.com/myquay/MultiTenant.AspNetCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/myquay/MultiTenant.AspNetCore.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>multitenant;multitenancy</PackageTags>
+    <PackageReleaseNotes>$(ReleaseNotes)</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
