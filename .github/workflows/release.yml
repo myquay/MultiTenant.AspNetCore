@@ -33,13 +33,13 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: nuget-package
-        path: /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/MultiTenant.AspNetCore/bin/Release/MultiTenant.AspNetCore.*.nupkg
+        path: /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.nupkg
 
     - name: 💾 Archive symbols package
       uses: actions/upload-artifact@v3
       with:
         name: nuget-package
-        path: /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/MultiTenant.AspNetCore/bin/Release/MultiTenant.AspNetCore.*.snupkg
+        path: /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.snupkg
 
     - name: 🛠️ Setup NuGet
       uses: nuget/setup-nuget@v1
@@ -48,7 +48,7 @@ jobs:
         nuget-version: '5.x'
     
     - name: 🌐 Push NuGet package live
-      run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/MultiTenant.AspNetCore/bin/Release/MultiTenant.AspNetCore.*.nupkg -src https://api.nuget.org/v3/index.json
+      run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.nupkg -src https://api.nuget.org/v3/index.json
     
     - name: 🌐 Push NuGet symbol package live
-      run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/MultiTenant.AspNetCore/bin/Release/GuidOne.*.snupkg -src https://api.nuget.org/v3/index.json
+      run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.snupkg -src https://api.nuget.org/v3/index.json
