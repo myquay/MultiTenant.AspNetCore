@@ -5,7 +5,7 @@ on:
     types: [published]
 jobs:
   build:
-    name: Build GuidOne library
+    name: Build MultiTenant.AspNetCore library
     runs-on: ubuntu-latest
     steps:
 
