@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/myquay/MultiTenant.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myquay/MultiTenant.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>multitenant;multitenancy</PackageTags>
+    <PackageTags>multitenant;multitenancy;aspnet;core;aspnetcore;multi-tenancy;multi-tenant;saas</PackageTags>
     <PackageReleaseNotes>$(ReleaseNotes)</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSymbols>True</IncludeSymbols>
