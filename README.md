@@ -12,7 +12,7 @@ It supports
 * Per-tenant options registration
 * Per-tenant pipeline configuration
 
-I've written a deep-dive on the library internals here: [https://michael-mckenna.com/multi-tenant-asp-dot-net-8-tenant-resolution/](https://michael-mckenna.com/multi-tenant-asp-dot-net-8-tenant-resolution/)
+A deep-dive on the library internals is available here: [https://michael-mckenna.com/multi-tenant-asp-dot-net-8-tenant-resolution/](https://michael-mckenna.com/multi-tenant-asp-dot-net-8-tenant-resolution/)
 
 ## Quickstart
 
