@@ -94,6 +94,8 @@ You're done, whenever you want to access the current tenant just inject `IMultiT
 
 ### Advanced configuration
 
+#### Per-tenant services & options
+
 The library supports configuring services or options differently for different tenants, this allows you to do things such as register a database context with a seperate connection string etc.
 
 ```csharp
@@ -117,7 +119,9 @@ The library supports configuring services or options differently for different t
     });
 ```
 
-The library also supports modifying the middleware pipeline based on tenant. This is especially useful if a middleware captures its configuration on startup. 
+#### Per-tenant pipeline
+
+The library also supports modifying the middleware pipeline based on tenant. This allows different tenants to load completely different middleware and can be especially useful if a middleware captures its configuration on startup. 
 
 For example the localisation middleware caches its configuration on start-up so by the time a request comes in we cannot alter it for that tenant's configuration. By having a tenant specific pipeline the configuration options captured by the middleware on start-up is now tenant specific. 
 
@@ -132,3 +136,26 @@ app.UseMultiTenantPipeline<TenantOptions>((tenant, app) =>
 
 This makes our library compatible with a wide range of existing middleware without the need of additional work-arounds.
 
+## Roadmap
+
+- [x] Tenant resolution
+- [x] Per-tenant services (Dependency injection)
+- [x] Per-tenant options
+- [x] Per-tenant pipeline
+- [ ] Per-tenant data-isolation with EF Core
+- [ ] Per-tenant authentication
+
+## Contributing
+
+Contributions are very welcome!
+
+### Ways to contribute
+
+* Fix an existing issue and submit a pull request
+* Review open pull requests
+* Report a new issue
+* Make a suggestion/ contribute to a discussion
+
+## License
+
+MIT
