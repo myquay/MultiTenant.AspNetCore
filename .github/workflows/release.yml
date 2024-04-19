@@ -49,6 +49,3 @@ jobs:
     
     - name: 🌐 Push NuGet package live
       run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.nupkg -src https://api.nuget.org/v3/index.json
-    
-    - name: 🌐 Push NuGet symbol package live
-      run: nuget push /home/runner/work/MultiTenant.AspNetCore/MultiTenant.AspNetCore/src/bin/Release/MultiTenant.AspNetCore.*.snupkg -src https://api.nuget.org/v3/index.json
