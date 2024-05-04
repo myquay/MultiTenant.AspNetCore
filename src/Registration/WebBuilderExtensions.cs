@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MultiTenant.AspNetCore.Builder;
+using MultiTenant.AspNetCore.Infrastructure.DependencyInjection;
 using MultiTenant.AspNetCore.Infrastructure.Middleware;
 using System.Reflection.Metadata.Ecma335;
 
@@ -33,7 +34,7 @@ namespace MultiTenant.AspNetCore
             if (!options.DisableAutomaticPipelineRegistration)
                 Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultiTenantContextAccessorStartupFilter<T>()));
 
-            return new TenantBuilder<T>(Services);
+            return new TenantBuilder<T>(Services, options);
         }
 
         //Register the multitenant request services middleware manually for more control over operational ordering
@@ -47,8 +48,16 @@ namespace MultiTenant.AspNetCore
             if (services.Any(s => s.GetType().GetGenericTypeDefinition() == typeof(MultiTenantContextAccessorStartupFilter<>)))
                 throw new InvalidOperationException("UseMultiTenant must only be called if startup registration is disabled, set 'DisableAutomaticPipelineRegistration' to true");
 
-            //Register the multitenant request services middleware with the app pipeline
-            return builder.UseMiddleware<MultiTenantContextAccessorMiddleware<T>>();
+            if (builder.ApplicationServices.GetServices<IMultiTenantServiceScopeFactory>().Any())
+            {
+                //Register the multitenant request services middleware with the app pipeline
+                return builder.UseMiddleware<MultiTenantContextAccessorMiddleware<T>>()
+                    .UseMiddleware<MultiTenantRequestServicesMiddleware<T>>();
+            }
+            else
+            {
+                return builder.UseMiddleware<MultiTenantContextAccessorMiddleware<T>>();
+            }
         }
     }
 }

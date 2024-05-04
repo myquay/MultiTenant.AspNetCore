@@ -15,7 +15,7 @@ namespace MultiTenant.AspNetCore.Builder
     /// Tenant builder
     /// </summary>
     /// <param name="services"></param>
-    public class TenantBuilder<T>(IServiceCollection Services) where T : ITenantInfo
+    public class TenantBuilder<T>(IServiceCollection Services, MultiTenantOptions options) where T : ITenantInfo
     {
         /// <summary>
         /// Register the tenant resolver implementation
@@ -73,11 +73,12 @@ namespace MultiTenant.AspNetCore.Builder
         public TenantBuilder<T> WithTenantedServices(Action<IServiceCollection, T?> configuration)
         {
             //Replace the default service provider with a multitenant service provider
-            Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
+            if (!options.DisableAutomaticPipelineRegistration)
+                Services.Insert(0, ServiceDescriptor.Transient<IStartupFilter>(provider => new MultitenantRequestServicesStartupFilter<T>()));
 
             //Register the multi-tenant service provider
-            Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(Services, configuration));
             Services.AddSingleton<IMultiTenantServiceScopeFactory, MultiTenantServiceScopeFactory<T>>();
+            Services.AddSingleton(new MultiTenantServiceProviderFactory<T>(Services, configuration));
 
             return this;
         }
