@@ -136,6 +136,26 @@ app.UseMultiTenantPipeline<TenantOptions>((tenant, app) =>
 
 This makes our library compatible with a wide range of existing middleware without the need of additional work-arounds.
 
+#### Disable automatic tenant resolution middleware registration
+
+By default the library will attempt to resolve the current tenant at the start of the middleware pipeline so that the tenant context is available as early as possible.
+
+However, if your tenant resolution strategy cannot resolve a tenant identifier this early on you can disable this behvaior and manually specify when tenant resolution should be attempted using `app.UseMultiTenancy<TenantInfo>()`
+
+First disable automatic registration
+
+```csharp
+services.AddMultiTenancy<TestTenant>(o => { o.DisableAutomaticPipelineRegistration = true; })
+```
+
+The specify where the tenant resolution should be attempted
+
+```csharp
+app.UseThis();
+app.UseMultiTenancy<TestTenant>(); //Tenant resolution strategy used here
+app.UseThat();
+```
+
 ## Roadmap
 
 - [x] Tenant resolution
