@@ -23,11 +23,11 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.AspNetCore.Contrib.MultiTenant.csproj" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\src\MultiTenant.AspNetCore.csproj" />
 	</ItemGroup>
 </Project>

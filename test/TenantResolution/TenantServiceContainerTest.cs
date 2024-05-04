@@ -2,22 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Contrib.MultiTenant.DependencyInjection;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using System.Net;
 
-namespace Microsoft.AspNetCore.Contrib.MultiTenant.Tests.TenantResolution
+namespace MultiTenant.AspNetCore.Tests.TenantResolution
 {
     public class TenantServiceContainerTest
     {
-        private readonly TestServer _testMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantStartupServicesStartup>());
+        private readonly TestServer _testMultiTenancyServer = new(new WebHostBuilder().UseStartup<TwoTenantStartupServicesStartup>());
 
         [Fact]
         public async Task DifferentOperationServiceInstances()
@@ -80,7 +71,7 @@ namespace Microsoft.AspNetCore.Contrib.MultiTenant.Tests.TenantResolution
                 {
                     new() { Id = "1", Identifier = "tenant1.local" },
                     new() { Id = "2", Identifier = "tenant2.local" }
-                }).WithTenantedServices((t, s) =>
+                }).WithTenantedServices((s, t) =>
                 {
                     s.AddSingleton(new OperationIdService());
                 });

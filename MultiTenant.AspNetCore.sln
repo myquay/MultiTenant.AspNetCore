@@ -3,14 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34414.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Contrib.MultiTenant", "src\Microsoft.AspNetCore.Contrib.MultiTenant.csproj", "{9DCD8263-56E8-49E9-BE14-B9F717FB0D8F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2B2161A8-A76B-4241-AB50-E4978EE3B97F}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AspNetCore.Contrib.MultiTenant.Tests", "test\Microsoft.AspNetCore.Contrib.MultiTenant.Tests.csproj", "{D742483E-F944-41AC-8025-6F27A826C1C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiTenant.AspNetCore.Tests", "test\MultiTenant.AspNetCore.Tests.csproj", "{D742483E-F944-41AC-8025-6F27A826C1C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiTenant.AspNetCore", "src\MultiTenant.AspNetCore.csproj", "{9E27ACCE-2584-4F0D-8718-BAB4D1FB6F3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,14 +19,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9DCD8263-56E8-49E9-BE14-B9F717FB0D8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DCD8263-56E8-49E9-BE14-B9F717FB0D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DCD8263-56E8-49E9-BE14-B9F717FB0D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCD8263-56E8-49E9-BE14-B9F717FB0D8F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D742483E-F944-41AC-8025-6F27A826C1C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D742483E-F944-41AC-8025-6F27A826C1C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D742483E-F944-41AC-8025-6F27A826C1C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D742483E-F944-41AC-8025-6F27A826C1C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E27ACCE-2584-4F0D-8718-BAB4D1FB6F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E27ACCE-2584-4F0D-8718-BAB4D1FB6F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E27ACCE-2584-4F0D-8718-BAB4D1FB6F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E27ACCE-2584-4F0D-8718-BAB4D1FB6F3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
