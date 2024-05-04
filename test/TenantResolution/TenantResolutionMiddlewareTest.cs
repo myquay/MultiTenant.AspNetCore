@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using MultiTenant.AspNetCore.Tests.Startup;
 using System.Net;
 
 namespace MultiTenant.AspNetCore.Tests.TenantResolution
 {
     public class TenantResolutionMiddlewareTest
     {
-        private readonly TestServer _testMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantStartupNoServicesStartup>());
+        private readonly TestServer _testMultiTenancyServer = new(new WebHostBuilder().UseStartup<TwoTenantStartupNoServicesStartup>());
 
         [Theory]
         [InlineData("tenant1.local")]
@@ -59,43 +58,52 @@ namespace MultiTenant.AspNetCore.Tests.TenantResolution
                 });
             });
         }
-    }
 
-    public class  TwoTenantStartupNoServicesStartup
-    {
-        public void ConfigureServices(IServiceCollection services)
+        [Fact]
+        public void TenantResolutionInvalidManualMultiTenancyRegistration()
         {
-
-            //Add routing
-            services.AddRouting();
-
-            //Add multi-tenant services
-            services.AddMultiTenancy<TestTenant>()
-                .WithHostResolutionStrategy()
-                .WithInMemoryTenantLookupService(new List<TestTenant>
-                {
-                    new() { Id = "1", Identifier = "tenant1.local" },
-                    new() { Id = "2", Identifier = "tenant2.local" }
-                });
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var _testInvalidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantInvalidManualMultiTenancyRegistration>());
+            });
         }
 
-        public void Configure(IApplicationBuilder app)
+        [Theory]
+        [InlineData("tenant1.local")]
+        [InlineData("tenant2.local")]
+        public async Task ManualMultiTenantPipelineOrderingBeforeContext(string url)
         {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/current/tenant-resolution", async context =>
-                {
-                    var tenantLookUpService = context.RequestServices.GetRequiredService<ITenantResolutionStrategy>();
-                    await context.Response.WriteAsync(await tenantLookUpService.GetTenantIdentifierAsync());
-                });
 
-                endpoints.MapGet("/current/tenant-accessor", async context =>
-                {
-                    var tenantAccessor = context.RequestServices.GetRequiredService<IMultiTenantContextAccessor<TestTenant>>();
-                    await context.Response.WriteAsync(tenantAccessor.TenantInfo!.Identifier);
-                });
+            var _testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistration>());
+            var context = await _testValidManualMultiTenancyServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString(url);
+                c.Request.Path = "/before-context";
             });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Empty(await new StreamReader(context.Response.Body).ReadToEndAsync());
+        }
+
+
+        [Theory]
+        [InlineData("tenant1.local")]
+        [InlineData("tenant2.local")]
+        public async Task ManualMultiTenantPipelineOrderingAfterContext(string url)
+        {
+
+            var _testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistration>());
+
+            var context = await _testValidManualMultiTenancyServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString(url);
+                c.Request.Path = "/after-context";
+            });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Equal(url, await new StreamReader(context.Response.Body).ReadToEndAsync());
         }
     }
 }
