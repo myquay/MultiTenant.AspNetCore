@@ -9,6 +9,6 @@
         /// Get the current tenant identifier
         /// </summary>
         /// <returns></returns>
-        Task<string> GetTenantIdentifierAsync();
+        Task<string?> GetTenantIdentifierAsync();
     }
 }

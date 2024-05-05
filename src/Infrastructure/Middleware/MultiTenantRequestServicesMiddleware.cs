@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
 using MultiTenant.AspNetCore.Infrastructure.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace MultiTenant.AspNetCore.Infrastructure.Middleware
 {
@@ -9,7 +10,10 @@ namespace MultiTenant.AspNetCore.Infrastructure.Middleware
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="tenantServicesConfiguration"></param>
-    internal class MultiTenantRequestServicesMiddleware<T>(RequestDelegate next, IMultiTenantServiceScopeFactory multiTenantServiceProviderScopeFactory, IHttpContextAccessor httpContextAccessor, IMultiTenantContextAccessor<T> TenantAccessor, ITenantLookupService<T> TenantResolver, ITenantResolutionStrategy TenantResolutionStrategy) where T : ITenantInfo
+    internal class MultiTenantRequestServicesMiddleware<T>(
+        RequestDelegate next, 
+        IMultiTenantServiceScopeFactory multiTenantServiceProviderScopeFactory, 
+        IHttpContextAccessor httpContextAccessor) where T : ITenantInfo
     {
 
         /// <summary>
@@ -21,7 +25,6 @@ namespace MultiTenant.AspNetCore.Infrastructure.Middleware
         {
             //Set context if missing so it can be used by the tenant services to resolve the tenant
             httpContextAccessor.HttpContext ??= context;
-            TenantAccessor.TenantInfo ??= await TenantResolver.GetTenantAsync(await TenantResolutionStrategy.GetTenantIdentifierAsync());
 
             //Replace the service providers feature with our tenant specific one
             IServiceProvidersFeature existingFeature = null!;

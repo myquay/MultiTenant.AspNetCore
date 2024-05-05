@@ -15,7 +15,7 @@ namespace MultiTenant.AspNetCore
         /// Given an identifier, it returns the durable tenant id
         /// </summary>
         /// <returns></returns>
-        Task<T> GetTenantAsync(string identifier);
+        Task<T?> GetTenantAsync(string identifier);
 
     }
 }

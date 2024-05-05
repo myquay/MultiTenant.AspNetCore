@@ -14,7 +14,7 @@ namespace MultiTenant.AspNetCore.Infrastructure.Strategies
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<string> GetTenantIdentifierAsync()
+        public async Task<string?> GetTenantIdentifierAsync()
         {
             if (_httpContextAccessor.HttpContext == null)
                 throw new InvalidOperationException("HttpContext is not available");

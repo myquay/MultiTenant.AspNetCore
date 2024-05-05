@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MultiTenant.AspNetCore.Builder;
 using MultiTenant.AspNetCore.Infrastructure.Middleware;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MultiTenant.AspNetCore
 {
@@ -18,12 +17,12 @@ namespace MultiTenant.AspNetCore
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static TenantBuilder<T> AddMultiTenancy<T>(this IServiceCollection Services, Action<MultiTenantOptions>? configure = null) where T : ITenantInfo
+        public static TenantBuilder<T> AddMultiTenancy<T>(this IServiceCollection Services, Action<MultiTenantOptions<T>>? configure = null) where T : ITenantInfo
         {
             //Register the options
-            var options = new MultiTenantOptions();
+            var options = new MultiTenantOptions<T>();
             configure?.Invoke(options);
-            Services.Configure<MultiTenantOptions>(o => configure?.Invoke(o));
+            Services.Configure<MultiTenantOptions<T>>(o => configure?.Invoke(o));
 
 
             //Provide ambient tenant context
