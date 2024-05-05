@@ -15,7 +15,7 @@ namespace MultiTenant.AspNetCore.Builder
     /// Tenant builder
     /// </summary>
     /// <param name="services"></param>
-    public class TenantBuilder<T>(IServiceCollection Services, MultiTenantOptions options) where T : ITenantInfo
+    public class TenantBuilder<T>(IServiceCollection Services, MultiTenantOptions<T> options) where T : ITenantInfo
     {
         /// <summary>
         /// Register the tenant resolver implementation
