@@ -71,11 +71,11 @@ namespace MultiTenant.AspNetCore.Tests.TenantResolution
         [Theory]
         [InlineData("tenant1.local")]
         [InlineData("tenant2.local")]
-        public async Task ManualMultiTenantPipelineOrderingBeforeContext(string url)
+        public async Task ManualMultiTenantPipelineOrderingBeforeContextNoServices(string url)
         {
 
-            var _testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistration>());
-            var context = await _testValidManualMultiTenancyServer.SendAsync(c =>
+            var testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistrationNoServices>());
+            var context = await testValidManualMultiTenancyServer.SendAsync(c =>
             {
                 c.Request.Method = HttpMethods.Get;
                 c.Request.Host = new HostString(url);
@@ -90,12 +90,50 @@ namespace MultiTenant.AspNetCore.Tests.TenantResolution
         [Theory]
         [InlineData("tenant1.local")]
         [InlineData("tenant2.local")]
-        public async Task ManualMultiTenantPipelineOrderingAfterContext(string url)
+        public async Task ManualMultiTenantPipelineOrderingAfterContextNoServices(string url)
         {
 
-            var _testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistration>());
+            var testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistrationNoServices>());
 
-            var context = await _testValidManualMultiTenancyServer.SendAsync(c =>
+            var context = await testValidManualMultiTenancyServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString(url);
+                c.Request.Path = "/after-context";
+            });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Equal(url, await new StreamReader(context.Response.Body).ReadToEndAsync());
+        }
+
+        [Theory]
+        [InlineData("tenant1.local")]
+        [InlineData("tenant2.local")]
+        public async Task ManualMultiTenantPipelineOrderingBeforeContextWithServices(string url)
+        {
+
+            var testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistrationWithServices>());
+            var context = await testValidManualMultiTenancyServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString(url);
+                c.Request.Path = "/before-context";
+            });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Empty(await new StreamReader(context.Response.Body).ReadToEndAsync());
+        }
+
+
+        [Theory]
+        [InlineData("tenant1.local")]
+        [InlineData("tenant2.local")]
+        public async Task ManualMultiTenantPipelineOrderingAfterContextWithServices(string url)
+        {
+
+            var testValidManualMultiTenancyServer = new TestServer(new WebHostBuilder().UseStartup<TwoTenantValidManualMultiTenancyRegistrationWithServices>());
+
+            var context = await testValidManualMultiTenancyServer.SendAsync(c =>
             {
                 c.Request.Method = HttpMethods.Get;
                 c.Request.Host = new HostString(url);
