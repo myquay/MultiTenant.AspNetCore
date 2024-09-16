@@ -27,7 +27,7 @@ namespace MultiTenant.AspNetCore.Infrastructure.Middleware
             httpContextAccessor.HttpContext ??= context;
 
             //Replace the service providers feature with our tenant specific one
-            IServiceProvidersFeature? existingFeature = context.Features.Get<IServiceProvidersFeature>()!;
+            IServiceProvidersFeature? existingFeature = context.Features.Get<IServiceProvidersFeature>();
             try
             {
                 context.Features.Set<IServiceProvidersFeature>(new RequestServicesFeature(context, multiTenantServiceProviderScopeFactory));
