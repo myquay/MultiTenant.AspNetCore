@@ -9,6 +9,7 @@ namespace MultiTenant.AspNetCore.Tests.TenantResolution
     public class TenantResolutionMiddlewareTest
     {
         private readonly TestServer _testMultiTenancyServer = new(new WebHostBuilder().UseStartup<TwoTenantStartupNoServicesStartup>());
+        private readonly TestServer _returnNotFoundServer = new(new WebHostBuilder().UseStartup<TwoTenantReturnNotFoundStartup>());
 
         [Theory]
         [InlineData("tenant1.local")]
@@ -57,6 +58,34 @@ namespace MultiTenant.AspNetCore.Tests.TenantResolution
                     c.Request.Path = "/current/tenant-resolution";
                 });
             });
+        }
+
+        [Fact]
+        public async Task ReturnNotFoundBehaviorInvalidTenantReturns404()
+        {
+            var context = await _returnNotFoundServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString("public-web.azurewebsites.net");
+                c.Request.Path = "/current/tenant-accessor";
+            });
+
+            Assert.Equal((int)HttpStatusCode.NotFound, context.Response.StatusCode);
+            Assert.Empty(await new StreamReader(context.Response.Body).ReadToEndAsync());
+        }
+
+        [Fact]
+        public async Task ReturnNotFoundBehaviorValidTenantContinuesPipeline()
+        {
+            var context = await _returnNotFoundServer.SendAsync(c =>
+            {
+                c.Request.Method = HttpMethods.Get;
+                c.Request.Host = new HostString("tenant1.local");
+                c.Request.Path = "/current/tenant-accessor";
+            });
+
+            Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
+            Assert.Equal("tenant1.local", await new StreamReader(context.Response.Body).ReadToEndAsync());
         }
 
         [Fact]

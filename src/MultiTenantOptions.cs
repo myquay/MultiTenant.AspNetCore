@@ -31,6 +31,10 @@
         /// <summary>
         /// Use the default tenant when a tenant is not found
         /// </summary>
-        UseDefault
+        UseDefault,
+        /// <summary>
+        /// Return a 404 response when a tenant is not found
+        /// </summary>
+        ReturnNotFound
     }
 }

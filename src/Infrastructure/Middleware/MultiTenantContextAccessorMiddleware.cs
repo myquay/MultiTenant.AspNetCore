@@ -33,6 +33,11 @@ namespace MultiTenant.AspNetCore.Infrastructure.Middleware
             var identifier = await TenantResolutionStrategy.GetTenantIdentifierAsync();
             if(identifier == null && options.MissingTenantBehavior == MissingTenantBehavior.ThrowException)
                 throw new InvalidOperationException("Tenant identifier could not be resolved using configured strategy");
+            if(identifier == null && options.MissingTenantBehavior == MissingTenantBehavior.ReturnNotFound)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
+            }
             if(identifier == null && options.MissingTenantBehavior == MissingTenantBehavior.UseDefault)
                 identifier = options.DefaultTenant?.Identifier;
 
@@ -42,6 +47,11 @@ namespace MultiTenant.AspNetCore.Infrastructure.Middleware
                 var tenant = await TenantResolver.GetTenantAsync(identifier);
                 if(tenant == null && options.MissingTenantBehavior == MissingTenantBehavior.ThrowException)
                     throw new InvalidOperationException($"No tenant found matching '{identifier}'");
+                if(tenant == null && options.MissingTenantBehavior == MissingTenantBehavior.ReturnNotFound)
+                {
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    return;
+                }
                 if(tenant == null && options.MissingTenantBehavior == MissingTenantBehavior.UseDefault)
                     tenant = options.DefaultTenant;
 
